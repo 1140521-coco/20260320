@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>銀河系：我們的星系家園</title>
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-soft: rgba(17, 24, 39, 0.72);
+      --card: rgba(14, 23, 45, 0.72);
+      --line: rgba(148, 163, 184, 0.22);
+      --text: #e5eefb;
+      --muted: #a8b8d8;
+      --accent: #7dd3fc;
+      --accent-strong: #c084fc;
+      --highlight: #fde68a;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(125, 211, 252, 0.18), transparent 35%),
+        radial-gradient(circle at 20% 20%, rgba(192, 132, 252, 0.16), transparent 25%),
+        radial-gradient(circle at 80% 30%, rgba(253, 230, 138, 0.12), transparent 20%),
+        linear-gradient(180deg, #04050c 0%, #07101f 48%, #02040b 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    body::before {
+      background-image:
+        radial-gradient(2px 2px at 12% 25%, rgba(255,255,255,0.9), transparent 60%),
+        radial-gradient(1.5px 1.5px at 24% 72%, rgba(255,255,255,0.65), transparent 60%),
+        radial-gradient(1.8px 1.8px at 76% 32%, rgba(255,255,255,0.8), transparent 60%),
+        radial-gradient(2px 2px at 84% 62%, rgba(255,255,255,0.7), transparent 60%),
+        radial-gradient(1.3px 1.3px at 58% 16%, rgba(255,255,255,0.75), transparent 60%),
+        radial-gradient(1.7px 1.7px at 46% 86%, rgba(255,255,255,0.65), transparent 60%),
+        radial-gradient(1.6px 1.6px at 8% 88%, rgba(255,255,255,0.55), transparent 60%);
+      opacity: 0.9;
+    }
+
+    body::after {
+      background: radial-gradient(circle at center, rgba(255,255,255,0.07), transparent 60%);
+      filter: blur(60px);
+      z-index: -3;
+    }
+
+    .page-shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 72px;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: grid;
+      align-items: center;
+      padding: 32px 0 48px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+      gap: 32px;
+      align-items: center;
+    }
+
+    .panel {
+      background: var(--bg-soft);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .hero-copy {
+      padding: 40px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(125, 211, 252, 0.35);
+      color: var(--accent);
+      background: rgba(10, 18, 35, 0.55);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.82rem;
+    }
+
+    h1 {
+      margin: 20px 0 16px;
+      font-size: clamp(2.8rem, 7vw, 5.8rem);
+      line-height: 0.94;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      line-height: 1.9;
+      color: var(--muted);
+      max-width: 62ch;
+    }
+
+    .hero-actions {
+      margin-top: 28px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 999px;
+      padding: 14px 22px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    }
+
+    .button.primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      color: #08101e;
+      box-shadow: 0 10px 30px rgba(125, 211, 252, 0.28);
+    }
+
+    .button.secondary {
+      border: 1px solid rgba(229, 238, 251, 0.18);
+      color: var(--text);
+      background: rgba(10, 16, 31, 0.55);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+    }
+
+    .hero-visual {
+      position: relative;
+      padding: 28px;
+      min-height: 520px;
+      overflow: hidden;
+    }
+
+    .galaxy-orbit {
+      position: absolute;
+      inset: 8% 8% auto auto;
+      width: min(100%, 430px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+    }
+
+    .spiral,
+    .spiral::before,
+    .spiral::after {
+      content: "";
+      position: absolute;
+      width: 78%;
+      height: 36%;
+      border-radius: 50%;
+      border: 1px solid rgba(125, 211, 252, 0.24);
+      box-shadow: 0 0 34px rgba(125, 211, 252, 0.12);
+      transform: rotate(18deg);
+    }
+
+    .spiral::before {
+      transform: rotate(76deg) scale(1.06);
+      border-color: rgba(192, 132, 252, 0.26);
+    }
+
+    .spiral::after {
+      transform: rotate(135deg) scale(0.92);
+      border-color: rgba(253, 230, 138, 0.22);
+    }
+
+    .core {
+      width: 84px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.98), rgba(253, 230, 138, 0.82), rgba(192,132,252,0.26) 70%, transparent 100%);
+      box-shadow: 0 0 55px rgba(253, 230, 138, 0.45);
+      animation: pulse 5s ease-in-out infinite;
+    }
+
+    .star-dot {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 18px rgba(255,255,255,0.6);
+      animation: twinkle 3.2s ease-in-out infinite;
+    }
+
+    .star-dot.sun {
+      width: 12px;
+      height: 12px;
+      background: var(--highlight);
+      box-shadow: 0 0 22px rgba(253,230,138,0.85);
+    }
+
+    .hero-card {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: min(100%, 320px);
+      padding: 22px;
+      background: rgba(7, 12, 24, 0.88);
+      border: 1px solid rgba(148,163,184,0.22);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card h2 {
+      margin: 0 0 12px;
+      font-size: 1.25rem;
+    }
+
+    .hero-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 26px;
+    }
+
+    .stat {
+      padding: 20px 18px;
+      border-radius: 18px;
+      background: rgba(8, 14, 26, 0.72);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      margin-bottom: 6px;
+      color: #fff;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    main {
+      display: grid;
+      gap: 24px;
+      margin-top: 18px;
+    }
+
+    .section {
+      padding: 32px;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 20px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+    }
+
+    .section-heading p {
+      margin: 0;
+      max-width: 56ch;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .feature-grid,
+    .facts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .feature,
+    .fact-card {
+      padding: 24px;
+      border-radius: 22px;
+      background: var(--card);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .feature:hover,
+    .fact-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(125, 211, 252, 0.35);
+    }
+
+    .feature-number {
+      display: inline-flex;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #08101e;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      margin-bottom: 16px;
+    }
+
+    .feature h3,
+    .fact-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.18rem;
+    }
+
+    .feature p,
+    .fact-card p,
+    .timeline p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .tab {
+      appearance: none;
+      border: 1px solid rgba(148,163,184,0.22);
+      background: rgba(8, 14, 26, 0.74);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font: inherit;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, rgba(125, 211, 252, 0.2), rgba(192,132,252,0.24));
+      border-color: rgba(125, 211, 252, 0.45);
+      color: #fff;
+    }
+
+    .fact-panels {
+      position: relative;
+    }
+
+    .fact-panel {
+      display: none;
+      animation: fadeUp 0.35s ease;
+    }
+
+    .fact-panel.active {
+      display: block;
+    }
+
+    .timeline {
+      position: relative;
+      display: grid;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      bottom: 10px;
+      width: 2px;
+      background: linear-gradient(180deg, rgba(125, 211, 252, 0.5), rgba(192, 132, 252, 0.1));
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 36px;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: 2px;
+      top: 8px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      box-shadow: 0 0 16px rgba(125, 211, 252, 0.3);
+    }
+
+    .timeline-item strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    footer {
+      padding: 28px 0 8px;
+      text-align: center;
+      color: rgba(229, 238, 251, 0.72);
+    }
+
+    .constellation {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .constellation span {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.9);
+      opacity: 0.75;
+      animation: drift linear infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.4; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    @keyframes drift {
+      from { transform: translateY(0); }
+      to { transform: translateY(-120px); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 980px) {
+      .hero {
+        min-height: unset;
+      }
+
+      .hero-grid,
+      .feature-grid,
+      .facts-grid,
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy,
+      .section {
+        padding: 28px;
+      }
+
+      .hero-visual {
+        min-height: 440px;
+      }
+
+      .hero-card {
+        position: relative;
+        width: 100%;
+        margin-top: 280px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page-shell {
+        width: min(100% - 20px, 1120px);
+      }
+
+      h1 {
+        font-size: clamp(2.5rem, 15vw, 4rem);
+      }
+
+      .hero-copy,
+      .section,
+      .hero-visual {
+        padding: 22px;
+      }
+
+      .button {
+        width: 100%;
+      }
+
+      .tabs {
+        flex-direction: column;
+      }
+
+      .tab {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="constellation" aria-hidden="true"></div>
+  <div class="page-shell">
+    <section class="hero" id="top">
+      <div class="hero-grid">
+        <div class="hero-copy panel">
+          <div class="eyebrow">Milky Way Galaxy</div>
+          <h1>銀河系，<br />我們所居住的星系家園</h1>
+          <p class="subtitle">
+            銀河系是一個巨大而壯觀的棒旋星系，擁有數千億顆恆星、星雲、星團與暗物質結構。
+            太陽系位在它旋臂的一隅，跟著整個星系一起繞行銀河中心，展開一場跨越數億年的宇宙旅程。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#overview">探索銀河系</a>
+            <a class="button secondary" href="#facts">快速知識卡</a>
+          </div>
+          <div class="stats">
+            <div class="stat">
+              <strong>10萬光年+</strong>
+              <span>估計盤面直徑，展現銀河系龐大的尺度。</span>
+            </div>
+            <div class="stat">
+              <strong>數千億</strong>
+              <span>恆星總量級，包含像太陽一樣的普通恆星。</span>
+            </div>
+            <div class="stat">
+              <strong>4 條主旋臂</strong>
+              <span>常見模型包含英仙臂、盾牌-半人馬臂等結構。</span>
+            </div>
+            <div class="stat">
+              <strong>約 2.3 億年</strong>
+              <span>太陽系繞銀河中心一圈的大約時間。</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual panel" aria-label="銀河系示意圖">
+          <div class="galaxy-orbit">
+            <div class="spiral"></div>
+            <div class="core"></div>
+            <span class="star-dot" style="top: 18%; left: 28%; animation-delay: 0.2s;"></span>
+            <span class="star-dot" style="top: 32%; right: 18%; animation-delay: 1.2s;"></span>
+            <span class="star-dot" style="bottom: 20%; left: 22%; animation-delay: 2.4s;"></span>
+            <span class="star-dot" style="bottom: 28%; right: 24%; animation-delay: 0.8s;"></span>
+            <span class="star-dot sun" style="top: 62%; left: 73%; animation-delay: 1.7s;" title="太陽系大約所在位置"></span>
+          </div>
+          <div class="hero-card">
+            <h2>你知道嗎？</h2>
+            <p>
+              我們在地球上看到的一條淡淡乳白光帶，就是從銀河系盤面內部往外看時，大量恆星密集投影形成的「銀河」。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main>
+      <section class="section panel" id="overview">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">Overview</div>
+            <h2>從結構看懂銀河系</h2>
+          </div>
+          <p>
+            銀河系不只是恆星的集合，它包含中央核球、棒狀結構、旋臂、星際氣體、塵埃，以及包覆外圍的銀河暈，彼此共同塑造出動態且複雜的宇宙系統。
+          </p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature">
+            <div class="feature-number">01</div>
+            <h3>中央核球與超大質量黑洞</h3>
+            <p>
+              銀河中心擁有高密度恆星區域，核心位置存在著超大質量黑洞「人馬座 A*」，是研究銀河動力的重要焦點。
+            </p>
+          </article>
+          <article class="feature">
+            <div class="feature-number">02</div>
+            <h3>棒旋結構與旋臂</h3>
+            <p>
+              現代觀測普遍認為銀河系屬於棒旋星系，旋臂中聚集了年輕恆星、分子雲與活躍的恆星形成區。
+            </p>
+          </article>
+          <article class="feature">
+            <div class="feature-number">03</div>
+            <h3>銀河暈與暗物質</h3>
+            <p>
+              在可見光之外，銀河系周圍還有由古老星團、稀薄氣體與大量暗物質組成的外圍結構，影響整體引力分布。
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section panel" id="facts">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">Interactive Facts</div>
+            <h2>快速切換不同主題</h2>
+          </div>
+          <p>
+            點選下方按鈕，可以切換查看銀河系的位置、形成歷程與觀測方式，快速掌握這個星系的幾個關鍵面向。
+          </p>
+        </div>
+        <div class="tabs" role="tablist" aria-label="銀河系知識切換">
+          <button class="tab active" role="tab" aria-selected="true" aria-controls="panel-position" id="tab-position" data-panel="position">我們在哪裡</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-history" id="tab-history" data-panel="history">形成與演化</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="panel-observe" id="tab-observe" data-panel="observe">如何觀測</button>
+        </div>
+        <div class="fact-panels">
+          <div class="fact-panel active" id="panel-position" role="tabpanel" aria-labelledby="tab-position">
+            <div class="facts-grid">
+              <article class="fact-card">
+                <h3>太陽系的位置</h3>
+                <p>太陽系位於獵戶臂（或稱本地旋臂）附近，距離銀河中心約 2.6 萬光年，並不在核心地帶。</p>
+              </article>
+              <article class="fact-card">
+                <h3>銀河中的速度</h3>
+                <p>太陽系正以極高速度繞行銀河中心，因此我們在宇宙中始終處於移動狀態。</p>
+              </article>
+              <article class="fact-card">
+                <h3>夜空中的銀河</h3>
+                <p>在遠離光害的地方，夏季夜空尤其容易觀察到橫跨天際的銀河帶，能看見銀河盤面的濃密恆星背景。</p>
+              </article>
+            </div>
+          </div>
+          <div class="fact-panel" id="panel-history" role="tabpanel" aria-labelledby="tab-history">
+            <div class="timeline">
+              <div class="timeline-item">
+                <strong>早期宇宙：原始氣體聚集</strong>
+                <p>銀河系由早期宇宙中的氣體雲與暗物質暈逐步聚合而成，經歷長時間的重力塌縮與吸積。</p>
+              </div>
+              <div class="timeline-item">
+                <strong>合併事件：吞併較小星系</strong>
+                <p>銀河系在演化中曾與多個矮星系互動或合併，這些事件改變了恆星分布，也留下潮汐流痕跡。</p>
+              </div>
+              <div class="timeline-item">
+                <strong>持續成長：恆星仍在誕生</strong>
+                <p>即使形成已久，銀河系中的分子雲仍持續孕育新恆星，讓整個星系保持活躍而非靜止不變。</p>
+              </div>
+            </div>
+          </div>
+          <div class="fact-panel" id="panel-observe" role="tabpanel" aria-labelledby="tab-observe">
+            <div class="facts-grid">
+              <article class="fact-card">
+                <h3>可見光觀測</h3>
+                <p>望遠鏡能觀察恆星與星團，但銀河盤面中的塵埃會遮擋部分區域，因此無法只靠肉眼完整描繪銀河結構。</p>
+              </article>
+              <article class="fact-card">
+                <h3>紅外線與電波</h3>
+                <p>紅外線與射電觀測可以穿透部分塵埃，幫助天文學家追蹤氣體分布、旋臂形狀與星際介質。</p>
+              </article>
+              <article class="fact-card">
+                <h3>恆星巡天任務</h3>
+                <p>現代太空望遠鏡與巡天計畫會測量恆星位置、速度與化學組成，逐步拼湊銀河系的三維地圖。</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      為宇宙中的一粒塵埃駐足片刻，重新認識我們所屬的銀河系。
+    </footer>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.fact-panel');
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.panel;
+
+        tabs.forEach((item) => {
+          item.classList.remove('active');
+          item.setAttribute('aria-selected', 'false');
+        });
+
+        panels.forEach((panel) => {
+          panel.classList.remove('active');
+        });
+
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+        document.getElementById(`panel-${target}`).classList.add('active');
+      });
+    });
+
+    const constellation = document.querySelector('.constellation');
+    const starCount = 42;
+
+    for (let i = 0; i < starCount; i += 1) {
+      const star = document.createElement('span');
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.top = `${Math.random() * 100}%`;
+      star.style.animationDuration = `${10 + Math.random() * 14}s`;
+      star.style.animationDelay = `${Math.random() * 6}s`;
+      star.style.opacity = `${0.25 + Math.random() * 0.7}`;
+      star.style.transform = `scale(${0.6 + Math.random() * 1.8})`;
+      constellation.appendChild(star);
+    }
+  </script>
+</body>
+</html>
